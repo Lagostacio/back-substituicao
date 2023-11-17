@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id    Int    @id @default(autoincrement())
+  login String
+  senha String
+  papel String
+}
+
+model Docente {
+  id           Int           @id @default(autoincrement())
+  siape        String
+  nome         String
+  usuario_id   Int
+  solicitacoes Solicitacao[]
+}
+
+model Chefia {
+  id         Int      @id @default(autoincrement())
+  inicio     DateTime
+  fim        DateTime
+  nivel      String
+  docente_id Int
+}
+
+model Curso {
+  id   Int    @id @default(autoincrement())
+  nome String
+}
+
+model Turma {
+  id       Int    @id @default(autoincrement())
+  nome     String
+  curso_id Int
+}
+
+model Coordenador {
+  id         Int      @id @default(autoincrement())
+  inicio     DateTime
+  fim        DateTime
+  curso_id   Int
+  docente_id Int
+}
+
+model Disciplina {
+  id   Int    @id @default(autoincrement())
+  nome String
+}
+
+model CicloLetivo {
+  id       Int      @id @default(autoincrement())
+  ano      String
+  semestre Int
+  inicio   DateTime
+  fim      DateTime
+}
+
+model DocenteCicloLetivo {
+  docente_id      Int
+  ciclo_letivo_id Int
+  nivel           String
+
+  @@id(fields: [docente_id, ciclo_letivo_id])
+}
+
+model Oferta {
+  docente_id      Int
+  turma_id        Int
+  ciclo_letivo_id Int
+  disciplina_id   Int
+
+  @@id(fields: [docente_id, turma_id, ciclo_letivo_id, disciplina_id])
+}
+
+model Solicitacao {
+  id                       Int      @id @default(autoincrement())
+  data                     DateTime
+  hora                     DateTime
+  justificativa            String
+  anexo                    String
+  tipo                     String
+  ciencia_substituto       Boolean
+  data_devolucao           DateTime
+  autorizacao_chefia       Boolean
+  ciencia_chefia           Boolean
+  ciencia_coordenador      Boolean
+  docente_solicitante      Docente  @relation(fields: [docente_solicitante_id], references: [id])
+  docente_solicitante_id   Int
+  docente_substituto_id    Int
+  ciclo_letivo_id          Int
+  disciplina_id            Int
+  turma_id                 Int
+  disciplina_substituta_id Int
+  chefia_id                Int
+  coordenador_id           Int
+}
